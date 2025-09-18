@@ -20,26 +20,36 @@ func ParseRequest(request *model.ServiceRequest) error {
 		return errors.ErrInvalidUUIDFormat
 	}
 	if request.EndDate != nil {
-		parsedEndDate, err := time.Parse("2006-01-02", request.EndDate.String())
+		parsedEndDate, err := time.Parse("2006-01-02", *request.EndDate)
 		if err != nil {
 			return errors.ErrInvalidDateFormat
 		}
-		request.EndDate = &parsedEndDate
+		strDate := parsedEndDate.Format("2006-01-02")
+		request.EndDate = &strDate
 	}
 
 	return nil
 }
 
 func ParseCountingRequest(req *model.CountingRequest) error {
-	if req.StartDate.IsZero() {
+	if req.StartDate == "" {
 		return errors.ErrZeroStartDate
 	}
 
-	endDate := time.Now()
-	if req.EndDate != nil {
-		endDate = *req.EndDate
+	startDate, err := time.Parse("2006-01-02", req.StartDate)
+	if err != nil {
+		return errors.ErrInvalidStartDate
 	}
-	if endDate.Before(req.StartDate) {
+
+	endDate := time.Now()
+	if req.EndDate != nil && *req.EndDate != "" {
+		endDate, err = time.Parse("2006-01-02", *req.EndDate)
+		if err != nil {
+			return errors.ErrInvalidEndDate
+		}
+	}
+
+	if endDate.Before(startDate) {
 		return errors.ErrEndDateBeforeStartDate
 	}
 

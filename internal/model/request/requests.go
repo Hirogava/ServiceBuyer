@@ -1,13 +1,11 @@
 package model
 
-import "time"
-
 type ServiceRequest struct {
 	Name      string  	 `json:"name"`
 	Cost      float64 	 `json:"cost"`
 	UserID    string  	 `json:"user_id"`
-	StartDate time.Time  `json:"start_date"`
-	EndDate   *time.Time `json:"end_date,omitempty"`
+	StartDate string  	 `json:"start_date"`
+	EndDate   *string    `json:"end_date,omitempty"`
 }
 
 type AmountResponse struct {
@@ -16,8 +14,8 @@ type AmountResponse struct {
 }
 
 type CountingRequest struct {
-	StartDate 	time.Time 		`json:"start_date"`
-	EndDate 	*time.Time  	`json:"end_date,omitempty"`
+	StartDate 	string			`json:"start_date"`
+	EndDate 	*string 		`json:"end_date,omitempty"`
 	UserID 		*string 		`json:"user_id,omitempty"`
 	ServiceName *string 		`json:"service_name,omitempty"`
 }

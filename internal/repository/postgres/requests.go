@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"encoding/json"
+	"time"
 
 	log "github.com/Hirogava/ServiceBuyer/internal/config/logger"
 	errors "github.com/Hirogava/ServiceBuyer/internal/errors/db"
@@ -93,12 +94,13 @@ func (manager *Manager) CountingServiceRequest(req *model.CountingRequest) (*dbM
 		SELECT 
 			'' AS user_id,
 			COALESCE(SUM(s.amount), 0) AS total_amount,
-			ARRAY_AGG(
-				DISTINCT JSON_BUILD_OBJECT(
+			COALESCE(
+				JSONB_AGG(DISTINCT JSONB_BUILD_OBJECT(
 					'id', s.id,
 					'name', s.name,
 					'amount', s.amount
-				)
+				)),
+				'[]'::jsonb
 			) AS services,
 			$1::date AS start_date,
 			$2::date AS end_date
@@ -114,7 +116,8 @@ func (manager *Manager) CountingServiceRequest(req *model.CountingRequest) (*dbM
 	var totalAmount float64
 	var servicesJSON []byte
 	var userIDResult string
-	var startDateResult, endDateResult string
+	var startDateResult string
+	var endDateResult *string
 
 	err = manager.Conn.QueryRow(query, req.StartDate, req.EndDate, req.UserID, req.ServiceName).
 		Scan(&userIDResult, &totalAmount, &servicesJSON, &startDateResult, &endDateResult)
@@ -125,8 +128,8 @@ func (manager *Manager) CountingServiceRequest(req *model.CountingRequest) (*dbM
 				UserID:    userIDResult,
 				Amount:    0,
 				Services:  []dbModel.Service{},
-				StartDate: req.StartDate.Format("2006-01-02"),
-				EndDate:   req.EndDate.Format("2006-01-02"),
+				StartDate: req.StartDate,
+				EndDate:   *req.EndDate,
 			}, nil
 		}
 		log.Logger.Error("Failed to query subscriptions", "error", err)
@@ -134,17 +137,25 @@ func (manager *Manager) CountingServiceRequest(req *model.CountingRequest) (*dbM
 	}
 
 	var services []dbModel.Service
-	if err := json.Unmarshal(servicesJSON, &services); err != nil {
-		log.Logger.Error("Failed to unmarshal services JSON", "error", err)
-		return nil, err
+    if servicesJSON != nil {
+        if err := json.Unmarshal(servicesJSON, &services); err != nil {
+            log.Logger.Error("Failed to unmarshal services JSON", "error", err)
+            return nil, err
+        }
+    } else {
+        services = []dbModel.Service{}
+    }
+	
+	var resultEndDate string
+	if endDateResult == nil {
+		resultEndDate = time.Now().Format("2006-01-02")
 	}
-
 	response := &dbModel.CountingResponse{
 		UserID:    userIDResult,
 		Amount:    totalAmount,
 		Services:  services,
 		StartDate: startDateResult,
-		EndDate:   endDateResult,
+		EndDate:   resultEndDate,
 	}
 
 	log.Logger.Info("Subscriptions counted successfully",
