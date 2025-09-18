@@ -8,7 +8,24 @@ ServiceBuyer - это REST API сервис, который позволяет:
 - Создавать записи о подписках пользователей
 - Получать статистику по подпискам с возможностью фильтрации
 
-## Установка и запуск
+## Быстрый запуск с Docker Compose
+
+### 1. Запуск всех сервисов
+```bash
+docker-compose up -d
+```
+
+### 2. Доступные сервисы
+После запуска будут доступны:
+- **API**: http://localhost:8080
+- **Swagger UI**: http://localhost:8080/swagger/
+
+### 3. Остановка сервисов
+```bash
+docker-compose down
+```
+
+## Ручная установка и запуск
 
 1. Установите зависимости:
 ```bash
@@ -17,8 +34,10 @@ go mod tidy
 
 2. Создайте файл `.env` с переменными окружения:
 ```
-POSTGRES_CONNECTION_STRING="user=postgres password=password dbname=projectDB sslmode=disable"
+POSTGRES_CONNECTION_STRING=user=postgres password=197320 dbname=service_buyer sslmode=disable
 SERVICE_SERVER_PORT=8080
+LOG_LEVEL=debug
+LOG_TO_CONSOLE=true
 ```
 
 3. Запустите сервер:
@@ -101,13 +120,16 @@ ServiceBuyer/
 │   ├── service/                # Бизнес-логика
 │   └── transport/              # HTTP транспорт
 ├── docs/                       # Swagger документация
+├── docker-compose.yml          # Docker Compose конфигурация
+├── Dockerfile                  # Docker образ
 └── README.md
 ```
 
 ## Технологии
 
 - Go 1.24
-- PostgreSQL
+- PostgreSQL 15
 - Gorilla Mux
 - Swagger/OpenAPI 3.0
 - Logrus для логирования
+- Docker & Docker Compose
