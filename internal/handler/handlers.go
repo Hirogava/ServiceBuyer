@@ -1,7 +1,11 @@
 package handler
 
-import "net/http"
+import (
+	db "github.com/Hirogava/ServiceBuyer/internal/repository/postgres"
 
-func RecordHandler(w http.ResponseWriter, r *http.Request) {}
+	"net/http"
+)
 
-func CountingHandler(w http.ResponseWriter, r *http.Request) {}
+func RecordHandler(w http.ResponseWriter, r *http.Request, manager *db.Manager) {}
+
+func CountingHandler(w http.ResponseWriter, r *http.Request, manager *db.Manager) {}

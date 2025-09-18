@@ -2,14 +2,15 @@ package http
 
 import (
 	handlers "github.com/Hirogava/ServiceBuyer/internal/handler"
+	db "github.com/Hirogava/ServiceBuyer/internal/repository/postgres"
 
 	"github.com/gorilla/mux"
 )
 
-func NewChatRouter() *mux.Router {
+func NewRouter(manager *db.Manager) *mux.Router {
 	r := mux.NewRouter()
 
-	handlers.InitChatRoutes(r)
+	handlers.InitChatRoutes(r, manager)
 
 	return r
 }

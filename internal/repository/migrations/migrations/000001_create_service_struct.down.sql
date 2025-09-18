@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS "user_purchase";
+DROP TABLE IF EXISTS "user";
+DROP TABLE IF EXISTS "service";
