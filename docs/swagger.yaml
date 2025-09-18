@@ -1,0 +1,101 @@
+basePath: /
+definitions:
+  github_com_Hirogava_ServiceBuyer_internal_model_request.CountingRequest:
+    properties:
+      end_date:
+        type: string
+      service_name:
+        type: string
+      start_date:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github_com_Hirogava_ServiceBuyer_internal_model_request.ServiceRequest:
+    properties:
+      cost:
+        type: number
+      end_date:
+        type: string
+      name:
+        type: string
+      start_date:
+        type: string
+      user_id:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: ServiceBuyer API - сервис для управления подписками пользователей
+  title: ServiceBuyer API
+  version: "1.0"
+paths:
+  /count:
+    get:
+      consumes:
+      - application/json
+      description: Получить статистику по подпискам с возможностью фильтрации
+      parameters:
+      - description: Параметры фильтрации
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Hirogava_ServiceBuyer_internal_model_request.CountingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное получение статистики
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Ошибка в данных запроса
+          schema:
+            type: string
+        "404":
+          description: Записи не найдены
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Получить статистику подписок
+      tags:
+      - statistics
+  /record:
+    post:
+      consumes:
+      - application/json
+      description: Создать новую запись о подписке пользователя
+      parameters:
+      - description: Данные подписки
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Hirogava_ServiceBuyer_internal_model_request.ServiceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное создание подписки
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Ошибка в данных запроса
+          schema:
+            type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            type: string
+      summary: Создать подписку
+      tags:
+      - subscriptions
+swagger: "2.0"

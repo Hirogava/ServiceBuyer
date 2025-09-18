@@ -1,16 +1,20 @@
 package http
 
 import (
-	handlers "github.com/Hirogava/ServiceBuyer/internal/handler"
-	db "github.com/Hirogava/ServiceBuyer/internal/repository/postgres"
+handlers "github.com/Hirogava/ServiceBuyer/internal/handler"
+db "github.com/Hirogava/ServiceBuyer/internal/repository/postgres"
 
-	"github.com/gorilla/mux"
+"github.com/gorilla/mux"
+httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func NewRouter(manager *db.Manager) *mux.Router {
-	r := mux.NewRouter()
+r := mux.NewRouter()
 
-	handlers.InitChatRoutes(r, manager)
+// Swagger UI
+r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 
-	return r
+handlers.InitChatRoutes(r, manager)
+
+return r
 }
