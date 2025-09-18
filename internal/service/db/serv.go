@@ -3,8 +3,8 @@ package db
 import (
 	"time"
 
-	model "github.com/Hirogava/ServiceBuyer/internal/model/request"
 	errors "github.com/Hirogava/ServiceBuyer/internal/errors/db"
+	model "github.com/Hirogava/ServiceBuyer/internal/model/request"
 
 	"github.com/google/uuid"
 )
@@ -25,6 +25,22 @@ func ParseRequest(request *model.ServiceRequest) error {
 			return errors.ErrInvalidDateFormat
 		}
 		request.EndDate = &parsedEndDate
+	}
+
+	return nil
+}
+
+func ParseCountingRequest(req *model.CountingRequest) error {
+	if req.StartDate.IsZero() {
+		return errors.ErrZeroStartDate
+	}
+
+	endDate := time.Now()
+	if req.EndDate != nil {
+		endDate = *req.EndDate
+	}
+	if endDate.Before(req.StartDate) {
+		return errors.ErrEndDateBeforeStartDate
 	}
 
 	return nil

@@ -12,4 +12,9 @@ var (
 
 	ErrUserNotFound = errors.New("user not found")
 	ErrServiceAlreadyExists = errors.New("service already exists")
+
+	ErrNoRecordsFound = errors.New("no records found")
+
+	ErrZeroStartDate = errors.New("start_date is required")
+	ErrEndDateBeforeStartDate = errors.New("end_date cannot be before start_date")
 )
